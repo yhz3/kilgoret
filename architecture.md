@@ -1,29 +1,29 @@
-# Architecture
+#### Architecture
 
-## Frontend
+Frontend
 - React
 
-## Backend
+Backend
 - Typescript
 - Nextjs
 
-## Database/ORM
+Database/ORM
 - Prisma -> SQL
 
-### Schema
+#### Schema
 
-#### User
+User
 - hashed_password
 - library
 
-#### Library
+Library
 - user
 - books
 
-#### Book
+Book
 - cover_edition_key
 - notes
 
-#### Note
+Note
 - title
 - content
