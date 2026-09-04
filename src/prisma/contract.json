@@ -4,8 +4,12 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "post": {
-      "model": "Post",
+    "book": {
+      "model": "Book",
+      "namespace": "public"
+    },
+    "note": {
+      "model": "Note",
       "namespace": "public"
     },
     "user": {
@@ -17,9 +21,91 @@
     "namespaces": {
       "public": {
         "models": {
-          "Post": {
+          "Book": {
             "fields": {
-              "authorId": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "titleKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "notes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "bookId"
+                  ]
+                },
+                "to": {
+                  "model": "Note",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "titleKey": {
+                  "column": "titleKey"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "book"
+            }
+          },
+          "Note": {
+            "fields": {
+              "bookId": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
@@ -27,16 +113,9 @@
                 }
               },
               "content": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "createdAt": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -53,66 +132,46 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
-              },
-              "updatedAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
               }
             },
             "relations": {
-              "author": {
+              "book": {
                 "cardinality": "N:1",
                 "on": {
                   "localFields": [
-                    "authorId"
+                    "bookId"
                   ],
                   "targetFields": [
                     "id"
                   ]
                 },
                 "to": {
-                  "model": "User",
+                  "model": "Book",
                   "namespace": "public"
                 }
               }
             },
             "storage": {
               "fields": {
-                "authorId": {
-                  "column": "authorId"
+                "bookId": {
+                  "column": "bookId"
                 },
                 "content": {
                   "column": "content"
-                },
-                "createdAt": {
-                  "column": "createdAt"
                 },
                 "id": {
                   "column": "id"
                 },
                 "title": {
                   "column": "title"
-                },
-                "updatedAt": {
-                  "column": "updatedAt"
                 }
               },
               "namespaceId": "public",
-              "table": "post"
+              "table": "note"
             }
           },
           "User": {
             "fields": {
-              "createdAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
-              },
               "email": {
                 "nullable": false,
                 "type": {
@@ -134,13 +193,6 @@
                   "kind": "scalar"
                 }
               },
-              "updatedAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "kind": "scalar"
-                }
-              },
               "username": {
                 "nullable": true,
                 "type": {
@@ -150,27 +202,24 @@
               }
             },
             "relations": {
-              "posts": {
+              "books": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
                     "id"
                   ],
                   "targetFields": [
-                    "authorId"
+                    "userId"
                   ]
                 },
                 "to": {
-                  "model": "Post",
+                  "model": "Book",
                   "namespace": "public"
                 }
               }
             },
             "storage": {
               "fields": {
-                "createdAt": {
-                  "column": "createdAt"
-                },
                 "email": {
                   "column": "email"
                 },
@@ -179,9 +228,6 @@
                 },
                 "name": {
                   "column": "name"
-                },
-                "updatedAt": {
-                  "column": "updatedAt"
                 },
                 "username": {
                   "column": "username"
@@ -200,9 +246,71 @@
       "public": {
         "entries": {
           "table": {
-            "post": {
+            "book": {
               "columns": {
-                "authorId": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "titleKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "book"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "book_userId_idx_a489d58a",
+                  "prefix": "book_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "note": {
+              "columns": {
+                "bookId": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
                   "nullable": false
@@ -210,15 +318,6 @@
                 "content": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": true
-                },
-                "createdAt": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
                   "nullable": false
                 },
                 "id": {
@@ -234,38 +333,33 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
-                },
-                "updatedAt": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "nativeType": "timestamptz",
-                  "nullable": false
                 }
               },
               "foreignKeys": [
                 {
                   "source": {
                     "columns": [
-                      "authorId"
+                      "bookId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "post"
+                    "tableName": "note"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "user"
+                    "tableName": "book"
                   }
                 }
               ],
               "indexes": [
                 {
                   "columns": [
-                    "authorId"
+                    "bookId"
                   ],
-                  "name": "post_authorId_idx_e47547ed",
-                  "prefix": "post_authorId_idx",
+                  "name": "note_bookId_idx_3eec38a3",
+                  "prefix": "note_bookId_idx",
                   "unique": false
                 }
               ],
@@ -278,15 +372,6 @@
             },
             "user": {
               "columns": {
-                "createdAt": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nativeType": "timestamptz",
-                  "nullable": false
-                },
                 "email": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -305,11 +390,6 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
-                },
-                "updatedAt": {
-                  "codecId": "pg/timestamptz-string@1",
-                  "nativeType": "timestamptz",
-                  "nullable": false
                 },
                 "username": {
                   "codecId": "pg/text@1",
@@ -338,44 +418,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "1e8412e162dbbe69f4bb3bf8d07f0280ae67eaab15c34dcf201e67468315428d"
-  },
-  "execution": {
-    "executionHash": "4abff323cc88151ef9c9a0ec90122cfee6d46814a118cdb66a9fdd94a4123463",
-    "mutations": {
-      "defaults": [
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "ref": {
-            "column": "updatedAt",
-            "namespace": "public",
-            "table": "post"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "ref": {
-            "column": "updatedAt",
-            "namespace": "public",
-            "table": "user"
-          }
-        }
-      ]
-    }
+    "storageHash": "44813b418150d7722b366f74175cabf6b38253f2d7017a7d3d7d28ec83558bb8"
   },
   "capabilities": {
     "postgres": {
